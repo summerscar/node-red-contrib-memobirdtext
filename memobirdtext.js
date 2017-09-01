@@ -36,17 +36,21 @@ module.exports = function(RED) {
         node.on('input', async (msg) => {
             //绑定设备
             this.initRes = await getData(url.account, this.config) 
-            //开始打印
-            console.log('printText开始')
-            let print = {
-                timestamp: moment().format('YYYY-MM-DD HH:mm:ss'),
-                ak: this.config.ak,
-                memobirdID: this.config.memobirdID,
-                userID: this.initRes.showapi_userid,
-                printcontent: `T:${iconv.encode(msg.payload, 'gbk').toString('base64')}`
+            if ( this.initRes.showapi_userid ) {
+                //开始打印
+                console.log('printText开始')
+                let print = {
+                    timestamp: moment().format('YYYY-MM-DD HH:mm:ss'),
+                    ak: this.config.ak,
+                    memobirdID: this.config.memobirdID,
+                    userID: this.initRes.showapi_userid,
+                    printcontent: `T:${iconv.encode(msg.payload, 'gbk').toString('base64')}`
+                }
+                msg.payload = await getData(url.print, print)
+                node.send(msg);
+            } else {
+                node.send(this.initRes);
             }
-            msg.payload = await getData(url.print, print)
-            node.send(msg);
         });
     }
     RED.nodes.registerType("memobirdtext",MemoBirdtext);
