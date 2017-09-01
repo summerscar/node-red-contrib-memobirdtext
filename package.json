@@ -1,6 +1,6 @@
 {
     "name": "node-red-contrib-memobirdtext",
-    "version": "1.2.1",
+    "version": "1.2.3",
     "description": "a memobird node",
     "keywords": [
         "node-red"
@@ -10,6 +10,10 @@
             "memobirdtext": "memobirdtext.js"
         }
     },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/summerscar/node-red-contrib-memobirdtext"
+      },
     "author": "summerscar",
     "license": "MIT",
     "dependencies": {

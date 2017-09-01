@@ -49,7 +49,7 @@ module.exports = function(RED) {
                 msg.payload = await getData(url.print, print)
                 node.send(msg);
             } else {
-                node.send(this.initRes);
+                node.send({payload: this.initRes});
             }
         });
     }
