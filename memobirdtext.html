@@ -3,7 +3,10 @@
         category: 'function',
         color: '#66ccff',
         defaults: {
-            name: {value:""}
+            name: {value:""},
+            ak: {value:"",required:true},
+            memobirdID: {value:"",required:true},
+            useridentifying: {value:"",required:true},
         },
         inputs:1,
         outputs:1,
@@ -16,11 +19,48 @@
 
 <script type="text/x-red" data-template-name="memobirdtext">
     <div class="form-row">
+        <label for="node-input-ak"><i class="fa fa-id-badge"></i> ak</label>
+        <input type="text" id="node-input-ak" placeholder="ak">
+    </div>
+    <div class="form-row">
+        <label for="node-input-memobirdID"><i class="fa fa-tablet"></i> memobirdID</label>
+        <input type="text" id="node-input-memobirdID" placeholder="memobirdID">
+    </div>
+    <div class="form-row">
+        <label for="node-input-useridentifying"><i class="fa fa-user-o"></i> useridentifying</label>
+        <input type="text" id="node-input-useridentifying" placeholder="useridentifying">
+    </div>
+    <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="memobirdtext">
-    <p>A simple node that converts the message payloads into all lower-case characters</p>
+    <p>咕咕机的字符打印节点，现阶段仅支持字符的打印。
+        <ul>
+            <li>ak自己发邮件申请</li>
+            <li>机器id：好像是双击机器按键会打印的</li>
+            <li>userid：应该是咕咕号...吧</li>
+        </ul>        
+    </p>
+    
+    <h3>Inputs</h3>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">string</span>
+            </dt>
+            <dd>传入需要打印的字符，建议直接用ES6的模板字符串</dd>
+        </dl>
+    
+     <h3>Outputs</h3>
+         <ol class="node-ports">
+             <li>Standard output
+                 <dl class="message-properties">
+                     <dt>payload <span class="property-type">string</span></dt>
+                     <dd>详见官方API文档：http://open.memobird.cn/upload/webapi.pdf</dd>
+                 </dl>
+             </li>
+         </ol>
+    
 </script>
