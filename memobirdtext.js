@@ -8,21 +8,6 @@ const url = {
     status: 'http://open.memobird.cn/home/getprintstatus'
 }
 
-function getData (url, data) {
-    return new Promise((resolve, reject) => {
-        axios.post(url, data)
-        .then((res) => {
-            if (res.data.showapi_res_code === 1) {
-                console.log('异步请求ok')
-                resolve(res.data)
-            } else {
-                console.log('失败! 原因：', res.data.showapi_res_error )
-                reject(res.data)
-            }
-        })
-    })
-}
-
 module.exports = function(RED) {
     function MemoBirdtext(config) {
         RED.nodes.createNode(this,config);
@@ -33,11 +18,11 @@ module.exports = function(RED) {
             timestamp: moment().format('YYYY-MM-DD HH:mm:ss')
         }     
         var node = this;
-        node.on('input', async (msg) => {
+        node.on('input', (msg) => {
             //绑定设备
-            this.initRes = await getData(url.account, this.config) 
-            if ( this.initRes.showapi_userid ) {
-                //开始打印
+            getData(url.account, this.config)
+            .then( (res) => {
+                this.initRes = res
                 console.log('printText开始')
                 let print = {
                     timestamp: moment().format('YYYY-MM-DD HH:mm:ss'),
@@ -46,12 +31,38 @@ module.exports = function(RED) {
                     userID: this.initRes.showapi_userid,
                     printcontent: `T:${iconv.encode(msg.payload, 'gbk').toString('base64')}`
                 }
-                msg.payload = await getData(url.print, print)
-                node.send(msg);
-            } else {
-                node.send({payload: this.initRes});
-            }
+                //开始打印
+                return getData(url.print, print)
+            })
+            .then((res) => {
+                node.send({payload: res});
+            })
+            .catch( (err) => {
+                if (err.data) {
+                    node.send({payload: err.data.showapi_res_error});
+                } else {
+                    node.send({payload: err});
+                }
+            })
         });
+
+        //获取数据
+        function getData (url, data) {
+            return new Promise((resolve, reject) => {
+                axios.post(url, data)
+                .then((res) => {
+                    if (res.data.showapi_res_code === 1) {
+                        console.log('异步请求ok')
+                        resolve(res.data)
+                    } else {
+                        reject(res)
+                    }
+                })
+                .catch( (err) => {
+                    reject(err)
+                })
+            })
+        }
     }
     RED.nodes.registerType("memobirdtext",MemoBirdtext);
 }
