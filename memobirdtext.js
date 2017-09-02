@@ -12,8 +12,8 @@ module.exports = function(RED) {
     function MemoBirdtext(config) {
         RED.nodes.createNode(this,config);
         this.config = {
-            ak: config.ak,
-            memobirdID: config.memobirdID,
+            ak: this.credentials.ak,
+            memobirdID: this.credentials.memobirdID,
             useridentifying: config.useridentifying,
             timestamp: moment().format('YYYY-MM-DD HH:mm:ss')
         }     
@@ -22,6 +22,7 @@ module.exports = function(RED) {
             //绑定设备
             getData(url.account, this.config)
             .then( (res) => {
+                this.status({fill:"blue",shape:"dot",text:"connected"});
                 this.initRes = res
                 console.log('printText开始')
                 let print = {
@@ -35,9 +36,11 @@ module.exports = function(RED) {
                 return getData(url.print, print)
             })
             .then((res) => {
+                this.status({});
                 node.send({payload: res});
             })
             .catch( (err) => {
+                this.status({fill:"red",shape:"ring",text:"disconnected"});
                 if (err.data) {
                     node.send({payload: err.data.showapi_res_error});
                 } else {
@@ -64,5 +67,10 @@ module.exports = function(RED) {
             })
         }
     }
-    RED.nodes.registerType("memobirdtext",MemoBirdtext);
+    RED.nodes.registerType("memobirdtext",MemoBirdtext,{
+        credentials: {
+            ak: {type:"password"},
+            memobirdID: {type:"password"}
+        }
+    });
 }
