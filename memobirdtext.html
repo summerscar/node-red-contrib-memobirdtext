@@ -5,7 +5,7 @@
         defaults: {
             name: {value:""},
             ak: {value:"",required:true},
-            memobirdID: {value:"",required:true},
+            memobirdID: {value:""},
             useridentifying: {value:"666",required:true},
         },
         credentials: {
@@ -43,9 +43,10 @@
 <script type="text/x-red" data-help-name="memobirdtext">
     <p>咕咕机的字符打印节点，现阶段仅支持字符的打印。
         <ul>
-            <li>ak自己发邮件申请</li>
-            <li>机器id：好像是双击机器按键会打印的</li>
-            <li>useridentifying：这个好像是自定义随便填的</li>
+            <li>ak：自己发邮件申请</li>
+            <li>memobirdID：好像是双击机器按键会打印的</li>
+            <li>useridentifying：自定义字符串随便填（默认666）</li>
+            <li>若msg.memobirdID传入了机器id，则忽略节点中所填机器ID</li>
         </ul>        
     </p>
     
@@ -55,6 +56,10 @@
                 <span class="property-type">string</span>
             </dt>
             <dd>传入需要打印的字符，建议直接用ES6的模板字符串</dd>
+            <dt>memobirdID
+                    <span class="property-type">string</span>
+                </dt>
+                <dd>传入机器ID字符串</dd>
         </dl>
     
      <h3>Outputs</h3>

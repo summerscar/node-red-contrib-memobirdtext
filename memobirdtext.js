@@ -10,15 +10,17 @@ const url = {
 
 module.exports = function(RED) {
     function MemoBirdtext(config) {
-        RED.nodes.createNode(this,config);
-        this.config = {
-            ak: this.credentials.ak,
-            memobirdID: this.credentials.memobirdID,
-            useridentifying: config.useridentifying,
-            timestamp: moment().format('YYYY-MM-DD HH:mm:ss')
-        }     
+        RED.nodes.createNode(this,config);   
         var node = this;
         node.on('input', (msg) => {
+
+            this.config = {
+                ak: this.credentials.ak,
+                memobirdID: msg.memobirdID || this.credentials.memobirdID,
+                useridentifying: config.useridentifying,
+                timestamp: moment().format('YYYY-MM-DD HH:mm:ss'),
+            }  
+
             //绑定设备
             getData(url.account, this.config)
             .then( (res) => {
@@ -28,7 +30,7 @@ module.exports = function(RED) {
                 let print = {
                     timestamp: moment().format('YYYY-MM-DD HH:mm:ss'),
                     ak: this.config.ak,
-                    memobirdID: this.config.memobirdID,
+                    memobirdID: msg.memobirdID || this.config.memobirdID,
                     userID: this.initRes.showapi_userid,
                     printcontent: `T:${iconv.encode(msg.payload, 'gbk').toString('base64')}`
                 }
@@ -37,13 +39,17 @@ module.exports = function(RED) {
             })
             .then((res) => {
                 this.status({});
+                node.log('打印请求成功！')
                 node.send({payload: res});
             })
             .catch( (err) => {
                 this.status({fill:"red",shape:"ring",text:"disconnected"});
                 if (err.data) {
+                    node.error('请求失败：'+ err.data.showapi_res_error)
                     node.send({payload: err.data.showapi_res_error});
+                   
                 } else {
+                    node.error('请求失败：'+ err)
                     node.send({payload: err});
                 }
             })
