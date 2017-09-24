@@ -1,6 +1,6 @@
 <script type="text/javascript">
     RED.nodes.registerType('memobirdtext',{
-        category: 'function',
+        category: 'memobird',
         color: '#66ccff',
         defaults: {
             name: {value:""},
@@ -60,6 +60,72 @@
                     <span class="property-type">string</span>
                 </dt>
                 <dd>传入机器ID字符串</dd>
+        </dl>
+    
+     <h3>Outputs</h3>
+         <ol class="node-ports">
+             <li>Standard output
+                 <dl class="message-properties">
+                     <dt>payload <span class="property-type">string</span></dt>
+                     <dd>详见官方API文档：http://open.memobird.cn/upload/webapi.pdf</dd>
+                 </dl>
+             </li>
+         </ol>
+    
+</script>
+
+
+<script type="text/javascript">
+    RED.nodes.registerType('memobirdcheck',{
+        category: 'memobird',
+        color: '#66ccff',
+        defaults: {
+            name: {value:""},
+            ak: {value:"",required:true},
+            timeOut: { value:3000, validate:RED.validators.number() }
+        },
+        credentials: {
+            ak: {type:"password"}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "memobirdtext.png",
+        label: function() {
+            return this.name||"memobirdcheck";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="memobirdcheck">
+    <div class="form-row">
+        <label for="node-input-ak"><i class="fa fa-id-badge"></i> ak</label>
+        <input type="password" id="node-input-ak" placeholder="ak">
+    </div>
+ 
+    <div class="form-row">
+        <label for="node-input-timeOut"><i class="fa fa-clock-o"></i> timeOut</label>
+        <input type="text" id="node-input-timeOut" placeholder="timeOut">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="memobirdcheck">
+    <p>咕咕机的检测节点，接在文本打印节点之后，默认延迟3s检测。
+        <ul>
+            <li>ak：自己发邮件申请</li>
+            <li>timeOut：检测延迟的时间</li>
+        </ul>        
+    </p>
+    
+    <h3>Inputs</h3>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">string</span>
+            </dt>
+            <dd>接收文本打印节点成功后的payload</dd>
         </dl>
     
      <h3>Outputs</h3>

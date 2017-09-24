@@ -1,5 +1,9 @@
 # node-red-contrib-memobirdtext
 
+1.2.7更新
+
+* 增加打印状态检测节点
+
 ## node-red平台的咕咕机字符打印节点
 
 * msg.payload 输入需打印的字符串

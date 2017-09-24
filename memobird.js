@@ -8,7 +8,39 @@ const url = {
     status: 'http://open.memobird.cn/home/getprintstatus'
 }
 
+//获取数据
+function getData (url, data) {
+    return new Promise((resolve, reject) => {
+        axios.post(url, data)
+        .then((res) => {
+            if (res.data.showapi_res_code === 1) {
+                console.log('异步请求ok')
+                resolve(res.data)
+            } else {
+                reject(res)
+            }
+        })
+        .catch( (err) => {
+            reject(err)
+        })
+    })
+}
+
 module.exports = function(RED) {
+
+    RED.nodes.registerType("memobirdcheck",MemoBirdcheck,{
+        credentials: {
+            ak: {type:"password"}
+        }
+    });
+
+    RED.nodes.registerType("memobirdtext",MemoBirdtext,{
+        credentials: {
+            ak: {type:"password"},
+            memobirdID: {type:"password"}
+        }
+    });
+
     function MemoBirdtext(config) {
         RED.nodes.createNode(this,config);   
         var node = this;
@@ -54,29 +86,38 @@ module.exports = function(RED) {
                 }
             })
         });
-
-        //获取数据
-        function getData (url, data) {
-            return new Promise((resolve, reject) => {
-                axios.post(url, data)
-                .then((res) => {
-                    if (res.data.showapi_res_code === 1) {
-                        console.log('异步请求ok')
-                        resolve(res.data)
-                    } else {
-                        reject(res)
-                    }
+    }
+    function MemoBirdcheck(config) {
+        RED.nodes.createNode(this,config);   
+        var node = this;
+        node.on('input', (msg) => {
+            setTimeout(() => {
+                let check = {
+                    timestamp: moment().format('YYYY-MM-DD HH:mm:ss'),
+                    ak: this.credentials.ak,
+                    printcontentid: msg.payload.printcontentid
+                }
+        
+                //检测
+                getData(url.status, check)
+                .then( (res) => {
+                    this.status({fill:"blue",shape:"dot",text:"connected"});
+                    node.log('检测完成!')
+                    node.send({payload: res});
+                    this.status({});
                 })
                 .catch( (err) => {
-                    reject(err)
+                    this.status({fill:"red",shape:"ring",text:"disconnected"});
+                    if (err.data) {
+                        node.error('请求失败：'+ err.data.showapi_res_error)
+                        node.send({payload: err.data.showapi_res_error});
+                       
+                    } else {
+                        node.error('请求失败：'+ err)
+                        node.send({payload: err});
+                    }
                 })
-            })
-        }
+            }, config.timeOut)
+        });
     }
-    RED.nodes.registerType("memobirdtext",MemoBirdtext,{
-        credentials: {
-            ak: {type:"password"},
-            memobirdID: {type:"password"}
-        }
-    });
 }
