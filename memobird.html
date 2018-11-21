@@ -47,9 +47,9 @@
             <li>memobirdID：好像是双击机器按键会打印的</li>
             <li>useridentifying：自定义字符串随便填（默认666）</li>
             <li>若msg.memobirdID传入了机器id，则忽略节点中所填机器ID</li>
-        </ul>        
+        </ul>
     </p>
-    
+
     <h3>Inputs</h3>
         <dl class="message-properties">
             <dt>payload
@@ -61,7 +61,7 @@
                 </dt>
                 <dd>传入机器ID字符串</dd>
         </dl>
-    
+
      <h3>Outputs</h3>
          <ol class="node-ports">
              <li>Standard output
@@ -71,7 +71,83 @@
                  </dl>
              </li>
          </ol>
-    
+
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('memobirdimage',{
+        category: 'memobird',
+        color: '#66ccff',
+        defaults: {
+            name: {value:""},
+            ak: {value:"",required:true},
+            memobirdID: {value:""},
+            useridentifying: {value:"666",required:true},
+        },
+        credentials: {
+            ak: {type:"password"},
+            memobirdID: {type:"password"}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "memobirdtext.png",
+        label: function() {
+            return this.name||"memobirdimage";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="memobirdimage">
+    <div class="form-row">
+        <label for="node-input-ak"><i class="fa fa-id-badge"></i> ak</label>
+        <input type="password" id="node-input-ak" placeholder="ak">
+    </div>
+    <div class="form-row">
+        <label for="node-input-memobirdID"><i class="fa fa-tablet"></i> memobirdID</label>
+        <input type="password" id="node-input-memobirdID" placeholder="memobirdID">
+    </div>
+    <div class="form-row">
+        <label for="node-input-useridentifying"><i class="fa fa-user-o"></i> useridentifying</label>
+        <input type="text" id="node-input-useridentifying" placeholder="useridentifying">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="memobirdimage">
+    <p>咕咕机的字符打印节点，现阶段仅支持字符的打印。
+        <ul>
+            <li>ak：自己发邮件申请</li>
+            <li>memobirdID：好像是双击机器按键会打印的</li>
+            <li>useridentifying：自定义字符串随便填（默认666）</li>
+            <li>若msg.memobirdID传入了机器id，则忽略节点中所填机器ID</li>
+        </ul>
+    </p>
+
+    <h3>Inputs</h3>
+        <dl class="message-properties">
+            <dt>payload
+                <span class="property-type">string</span>
+            </dt>
+            <dd>传入需要打印的图片地址</dd>
+            <dt>memobirdID
+                    <span class="property-type">string</span>
+                </dt>
+                <dd>传入机器ID字符串</dd>
+        </dl>
+
+     <h3>Outputs</h3>
+         <ol class="node-ports">
+             <li>Standard output
+                 <dl class="message-properties">
+                     <dt>payload <span class="property-type">string</span></dt>
+                     <dd>详见官方API文档：http://open.memobird.cn/upload/webapi.pdf</dd>
+                 </dl>
+             </li>
+         </ol>
+
 </script>
 
 
@@ -101,7 +177,7 @@
         <label for="node-input-ak"><i class="fa fa-id-badge"></i> ak</label>
         <input type="password" id="node-input-ak" placeholder="ak">
     </div>
- 
+
     <div class="form-row">
         <label for="node-input-timeOut"><i class="fa fa-clock-o"></i> timeOut</label>
         <input type="text" id="node-input-timeOut" placeholder="timeOut">
@@ -117,9 +193,9 @@
         <ul>
             <li>ak：自己发邮件申请</li>
             <li>timeOut：检测延迟的时间</li>
-        </ul>        
+        </ul>
     </p>
-    
+
     <h3>Inputs</h3>
         <dl class="message-properties">
             <dt>payload
@@ -127,7 +203,7 @@
             </dt>
             <dd>接收文本打印节点成功后的payload</dd>
         </dl>
-    
+
      <h3>Outputs</h3>
          <ol class="node-ports">
              <li>Standard output
@@ -137,5 +213,5 @@
                  </dl>
              </li>
          </ol>
-    
+
 </script>

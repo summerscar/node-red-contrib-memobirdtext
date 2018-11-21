@@ -1,5 +1,9 @@
 # node-red-contrib-memobirdtext
 
+1.3.0更新
+
+* 增加图片打印节点
+
 1.2.7更新
 
 * 增加打印状态检测节点
