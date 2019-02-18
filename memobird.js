@@ -4,10 +4,22 @@ const iconv = require('iconv-lite')
 const base64 = require('base64image')
 
 const url = {
-    account: 'http://open.memobird.cn/home/setuserbind',
-    print: 'http://open.memobird.cn/home/printpaper',
-    getPicBase64: 'http://open.memobird.cn/home/getSignalBase64Pic',
-    status: 'http://open.memobird.cn/home/getprintstatus'
+    account: {
+        'China': 'http://open.memobird.cn/home/setuserbind',
+        'International': 'http://api.memobird.cn/home/setuserbind'
+    },
+    print: {
+        'China': 'http://open.memobird.cn/home/printpaper',
+        'International': 'http://api.memobird.cn/home/printpaper'
+    },
+    getPicBase64: {
+        'China': 'http://open.memobird.cn/home/getSignalBase64Pic',
+        'International': 'http://api.memobird.cn/home/getSignalBase64Pic'
+    },
+    status: {
+        'China': 'http://open.memobird.cn/home/getprintstatus',
+        'International': 'http://api.memobird.cn/home/getprintstatus'
+    }
 }
 
 //获取数据
@@ -63,53 +75,6 @@ module.exports = function(RED) {
         }
     });
 
-    function MemoBirdtext(config) {
-        RED.nodes.createNode(this,config);
-        var node = this;
-        node.on('input', (msg) => {
-
-            this.config = {
-                ak: this.credentials.ak,
-                memobirdID: msg.memobirdID || this.credentials.memobirdID,
-                useridentifying: config.useridentifying,
-                timestamp: moment().format('YYYY-MM-DD HH:mm:ss'),
-            }
-
-            //绑定设备
-            getData(url.account, this.config)
-            .then( (res) => {
-                this.status({fill:"blue",shape:"dot",text:"connected"});
-                this.initRes = res
-                console.log('printText开始')
-                let print = {
-                    timestamp: moment().format('YYYY-MM-DD HH:mm:ss'),
-                    ak: this.config.ak,
-                    memobirdID: msg.memobirdID || this.config.memobirdID,
-                    userID: this.initRes.showapi_userid,
-                    printcontent: `T:${iconv.encode(msg.payload, 'gbk').toString('base64')}`
-                }
-                //开始打印
-                return getData(url.print, print)
-            })
-            .then((res) => {
-                this.status({});
-                node.log('打印请求成功！')
-                node.send({payload: res});
-            })
-            .catch( (err) => {
-                this.status({fill:"red",shape:"ring",text:"disconnected"});
-                if (err.data) {
-                    node.error('请求失败：'+ err.data.showapi_res_error)
-                    node.send({payload: err.data.showapi_res_error});
-
-                } else {
-                    node.error('请求失败：'+ err)
-                    node.send({payload: err});
-                }
-            })
-        });
-    }
-
     function MemoBirdimage(config) {
         RED.nodes.createNode(this,config);
         var node = this;
@@ -123,11 +88,11 @@ module.exports = function(RED) {
             }
             let base64Data
             getBase64(msg.payload).then(res => {
-                return getData(url.getPicBase64, {ak: this.config.ak, imgBase64String: res})
+                return getData(url.getPicBase64[config.devicetype], {ak: this.config.ak, imgBase64String: res})
             })
             .then(res => {
                 base64Data = res.result
-                return getData(url.account, this.config)
+                return getData(url.account[config.devicetype], this.config)
             })
             .then((res) => {
                 this.status({fill:"blue",shape:"dot",text:"connected"});
@@ -141,7 +106,7 @@ module.exports = function(RED) {
                     printcontent: `P:${base64Data}`
                 }
                 //开始打印
-                return getData(url.print, print)
+                return getData(url.print[config.devicetype], print)
             })
             .then((res) => {
                 this.status({});
@@ -172,7 +137,7 @@ module.exports = function(RED) {
                 }
 
                 //检测
-                getData(url.status, check)
+                getData(url.status[config.devicetype], check)
                 .then( (res) => {
                     this.status({fill:"blue",shape:"dot",text:"connected"});
                     node.log('检测完成!')
@@ -206,7 +171,7 @@ module.exports = function(RED) {
             }
 
             //绑定设备
-            getData(url.account, this.config)
+            getData(url.account[config.devicetype], this.config)
             .then( (res) => {
                 this.status({fill:"blue",shape:"dot",text:"connected"});
                 this.initRes = res
@@ -219,7 +184,7 @@ module.exports = function(RED) {
                     printcontent: `T:${iconv.encode(msg.payload, 'gbk').toString('base64')}`
                 }
                 //开始打印
-                return getData(url.print, print)
+                return getData(url.print[config.devicetype], print)
             })
             .then((res) => {
                 this.status({});
