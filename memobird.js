@@ -86,8 +86,20 @@ module.exports = function(RED) {
                 useridentifying: config.useridentifying,
                 timestamp: moment().format('YYYY-MM-DD HH:mm:ss'),
             }
+
+            let base64Res = function () {
+                if (msg.payload.toLowerCase().indexOf('http') === 0) {
+                    return getBase64(msg.payload)
+                } else {
+                    return new Promise(resolve => {
+                        msg.payload = msg.payload.replace('data:image/png;base64,', '')
+                        msg.payload = msg.payload.replace('data:image/jpg;base64,', '')
+                        resolve(msg.payload)
+                    })
+                }
+            }
             let base64Data
-            getBase64(msg.payload).then(res => {
+            base64Res().then(res => {
                 return getData(url.getPicBase64[config.devicetype], {ak: this.config.ak, imgBase64String: res})
             })
             .then(res => {

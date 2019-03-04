@@ -1,5 +1,8 @@
 # node-red-contrib-memobirdtext
 
+* 1.4.1更新
+    * 图片打印支持传入base64
+    
 * 1.4.0更新
     * 区分国内版/国际版设备
 
